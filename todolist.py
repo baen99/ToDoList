@@ -1,5 +1,5 @@
 """
-Main module for the TodoList application.
+Main module containing functionalities for the TodoList application.
 """
 
 import json
