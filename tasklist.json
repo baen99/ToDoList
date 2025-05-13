@@ -1,1 +1,17 @@
-[{"id": 1, "name": "Gym", "done": true}, {"id": 2, "name": "Einkauf", "done": false}]
+[
+    {
+        "id": 1,
+        "name": "Gym",
+        "done": true
+    },
+    {
+        "id": 2,
+        "name": "Einkauf",
+        "done": false
+    },
+    {
+        "id": 3,
+        "name": "Joggen",
+        "done": false
+    }
+]
