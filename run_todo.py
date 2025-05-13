@@ -2,26 +2,67 @@
 Runs todolist module
 """
 
-import json
+#import json
 from todolist import TodoList
 
-#def main():
+print("To-Do Liste")
+print("=======================")
+
+def show_menu():
+    """
+    Displays the main menu options to the user.
+    """
+
+    print()
+    # TODO: edit task
+    #print("Please choose an option:")
+    print("1. Aufgaben anzeigen")
+    print("2. Aufgabe hinzufügen")
+    print("3. Aufgabe als erledigt setzen")
+    print("4. Aufgabe löschen")
+    print("5. Speichern & Verlassen")
+    print()
+
+
 path = 'tasklist.json' # global path to todo list
 #path2 = 'example for alternative todo list'
 todo = TodoList(path) # create TodoList object
-#print(todo.tasklist)
-todo.view_tasks() # view current tasks
-#todo.add_task(task_name='Joggen')
-#todo.view_tasks()
-#todo.complete_task('Gym')
-#todo.view_tasks()
-#changed_list = todo.delete_task('Einkauf')
-#todo.view_tasks()
-#print(changed_list)
-#todo.save_tasks()
-#saved_todo = TodoList(path)
-#print('saved todo list:')
-#saved_todo.view_tasks()
+
+
+#def main():
+while True:
+
+    show_menu()
+    # user input to choose what function is executed
+    option = input('Wähle eine Option 1-5: ')
+    print()
+    # assertion handled by default case in switch
+    #assert option in ['1','2','3','4','5'], 'Wähle eine gültige Option (1-5)'
+
+    match option:
+        case '1':
+            todo.view_tasks()
+        case '2':
+            task_name = input('Name der Aufgabe: ')
+            todo.add_task(task_name)
+        case '3':
+            task_name = input('Name der Aufgabe: ')
+            todo.complete_task(task_name)
+        case '4':
+            task_name = input('Name der Aufgabe: ')
+            todo.delete_task(task_name)
+        case '5':
+            save_path = input('Dateipfad der Liste (enter für default): ')
+            if save_path == '':
+                save_path = None
+            todo.save_tasks(save_path)
+            break
+        case _:
+            print('Wähle eine gültige Option (1-5).')
+
+print('------------------')
+print('Frohes Schaffen!..')
+
 
 
 

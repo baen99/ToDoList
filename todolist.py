@@ -5,22 +5,6 @@ Main module containing functionalities for the TodoList application.
 import json
 import os
 
-# TODO: port this to run_todo.py
-def show_menu():
-    """
-    Displays the main menu options to the user.
-    """
-    print("To-Do List Application")
-    print("=======================")
-    # TODO: edit task
-    #print("Please choose an option:")
-    print("1. View Tasks")
-    print("2. Add Task")
-    print("3. Mark Task as Completed")
-    print("4. Delete Task")
-    print("5. Save & Exit")
-
-#show_menu()
 
 # todo list as object on which to perform operations
 class TodoList():
@@ -31,12 +15,20 @@ class TodoList():
         """
         Initializes the TodoList with a given filepath.
         """
-        assert os.path.exists(filepath), f"File {filepath} does not exist."
+        # check if path exists
+        try:
+            assert os.path.exists(filepath), f"Dateipfad {filepath} konnte nicht gefunden werden."
+        except AssertionError as e:
+            print(e)
+            # if path is invalid return empty list
+            self.tasklist = []
+        else:
+            self.filepath = filepath
 
-        self.filepath = filepath
+            with open(filepath, 'r') as f:
+                self.tasklist = json.load(f)
 
-        with open(filepath, 'r') as f:
-            self.tasklist = json.load(f)
+        
 
         
     def view_tasks(self):
@@ -45,17 +37,17 @@ class TodoList():
         """
         # check for empty tasklist
         if not self.tasklist:
-            print("Currently no tasks.")
+            print("Aktuell keine Aufgaben.")
             return
         
-        print("Current Tasks:")
+        print("Aktuelle Aufgaben:")
         for t,task in enumerate(self.tasklist):
             status = 'Erledigt' if task['done'] else 'Offen'
             print(f'{t+1}. {task['name']}: {status}')
 
         return
     
-    
+    # TODO: Benachrichtigungen am Ende der Funktionen printen
     def add_task(self, task_name):
         """
         Add a new task to an existing To-Do list
@@ -110,7 +102,7 @@ class TodoList():
 
         return
     
-
+    # TODO: fix bug index out of range wenn letztes element aus tasklist gelöscht wird
     def delete_task(self, task_name):
         """
         Delete a task from the To-Do list
