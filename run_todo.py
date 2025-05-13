@@ -24,7 +24,10 @@ def show_menu():
     print()
 
 
-path = 'tasklist.json' # global path to todo list
+# declare filepath globally
+path = input('Dateipfad der To-Do Liste (enter für default): ')
+if path == '':
+    path = 'tasklist.json' # default path to todo list
 #path2 = 'example for alternative todo list'
 todo = TodoList(path) # create TodoList object
 
