@@ -33,6 +33,8 @@ class TodoList():
         """
         assert os.path.exists(filepath), f"File {filepath} does not exist."
 
+        self.filepath = filepath
+
         with open(filepath, 'r') as f:
             self.tasklist = json.load(f)
 
@@ -58,6 +60,20 @@ class TodoList():
         """
         Add a new task to an existing To-Do list
         """
+
+        # assert new task doesn't already exist
+        task_found = False
+        for task in self.tasklist:
+            if task['name'] == task_name:
+                task_found = True
+                break
+            else:
+                pass
+
+        if task_found:
+            print('Aufgabe bereits in To-Do Liste enthalten.')
+            return
+
         new_task = {'id' : len(self.tasklist)+1,
                     'name' : task_name,
                     'done' : False
@@ -116,7 +132,22 @@ class TodoList():
         return self.tasklist
     
 
-        
+    def save_tasks(self, filepath=None):
+        """
+        Saves the altered tasklist to the specified filepath.
+        If no filepath is provided, it uses the object's default filepath.
+        """
+        if filepath is None:
+            filepath = self.filepath  # Use the object's self.filepath attribute
+
+        with open(filepath, 'w') as f:
+            json.dump(self.tasklist, f, indent=4)
+
+        print(f"To-Do Liste gespeichert unter {filepath}.")
+        return
+
+
+
 
 
 
