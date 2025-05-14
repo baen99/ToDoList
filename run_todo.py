@@ -33,6 +33,7 @@ todo = TodoList(path) # create TodoList object
 
 
 #def main():
+# loop over input options until exit option is chosen
 while True:
 
     show_menu()

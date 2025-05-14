@@ -47,7 +47,7 @@ class TodoList():
 
         return
     
-    # TODO: Benachrichtigungen am Ende der Funktionen printen
+
     def add_task(self, task_name):
         """
         Add a new task to an existing To-Do list
@@ -71,6 +71,7 @@ class TodoList():
                     'done' : False
                     }
         self.tasklist.append(new_task)
+        print(f'Aufgabe {task_name} erfolgreich hinzugefügt.')
         return 
     
     
@@ -100,27 +101,32 @@ class TodoList():
         
         completed_task['done'] = True
 
+        print(f'Aufgabe {task_name} als erledigt gesetzt.')
         return
     
-    # TODO: fix bug index out of range wenn letztes element aus tasklist gelöscht wird
+
     def delete_task(self, task_name):
         """
         Delete a task from the To-Do list
         """
 
         task_found = False
-        for t,task in enumerate(self.tasklist):
+        # iterate over copy of tasklist to avoid conflicts
+        for t, task in list(enumerate(self.tasklist)):
             if task['name'] == task_name:
                 del self.tasklist[t]
                 task_found = True
+                break  # Exit loop after deletion to avoid iteration issues
 
-            # make sure ids remain consistent
-            self.tasklist[t]['id'] = t+1
+        # Rebuild the tasklist with consistent IDs
+        for t, task in enumerate(self.tasklist):
+            task['id'] = t + 1
 
         if not task_found:
             print('Aufgabe nicht gefunden.')
             return
         
+        print(f'Aufgabe {task_name} erfolgreich gelöscht.')
         return self.tasklist
     
 
