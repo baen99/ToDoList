@@ -1,0 +1,48 @@
+"""
+Some experimental unit tests for the todolist methods
+"""
+
+import unittest
+import json
+import os
+from todolist import TodoList
+
+class TestTodoList(unittest.TestCase):
+
+    def setUp(self):
+        """
+        Create and save testlist to disk before every test
+        """
+        empty_tasks = []
+        cwd = os.getcwd() # get current working directory
+        self.testpath = cwd+'/testlist.json'
+        with open(self.testpath, 'w') as f:
+            json.dump(empty_tasks, f)
+        
+        self.testlist = TodoList(filepath=self.testpath)
+
+
+
+    def test_add_task(self):
+        testname = 'Test'
+        self.testlist.add_task(testname)
+        self.assertEqual(len(self.testlist.tasklist), 1) # previously empty test list should only contain 1 task after adding
+        self.assertEqual(self.testlist.tasklist[0]['id'], 1) # id should be 1
+        self.assertEqual(self.testlist.tasklist[0]['name'], testname) # name should be Test
+        self.assertFalse(self.testlist.tasklist[0]['done']) # task should not be done yet
+
+
+    # TODO: test other functions of TodoList
+    
+    
+       
+    def tearDown(self):
+        """
+        Delete mock list after every test
+        """
+        os.remove(self.testpath)
+    
+
+
+if __name__ == '__main__':
+    unittest.main()
