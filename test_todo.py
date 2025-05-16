@@ -2,7 +2,7 @@
 Runs todolist module
 """
 
-from todolist import TodoList
+from todolist_backend import TodoList
 
 #def main():
 path = 'tasklist.json' # global path to todo list

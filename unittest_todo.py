@@ -5,7 +5,7 @@ Some experimental unit tests for the todolist methods
 import unittest
 import json
 import os
-from todolist import TodoList
+from backend_decoupled import TodoList
 
 class TestTodoList(unittest.TestCase):
 
@@ -30,6 +30,14 @@ class TestTodoList(unittest.TestCase):
         self.assertEqual(self.testlist.tasklist[0]['id'], 1) # id should be 1
         self.assertEqual(self.testlist.tasklist[0]['name'], testname) # name should be Test
         self.assertFalse(self.testlist.tasklist[0]['done']) # task should not be done yet
+
+
+    def test__task_position(self):
+        testname = 'Test'
+        self.testlist.add_task(testname)  
+        idx = self.testlist._task_position(testname)
+        #print(idx)
+        self.assertEqual(idx, 0)    
 
 
     # TODO: test other functions of TodoList

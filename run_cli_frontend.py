@@ -1,9 +1,9 @@
 """
-Runs todolist module
+Runs todolist module in CLI interface
 """
 
 #import json
-from todolist import TodoList
+from todolist_backend import TodoList
 
 print("To-Do Liste")
 print("=======================")
