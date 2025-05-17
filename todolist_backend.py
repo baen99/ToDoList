@@ -5,22 +5,6 @@ Main module containing functionalities for the TodoList application.
 import json
 import os
 
-# TODO: port this to run_todo.py
-def show_menu():
-    """
-    Displays the main menu options to the user.
-    """
-    print("To-Do List Application")
-    print("=======================")
-    # TODO: edit task
-    #print("Please choose an option:")
-    print("1. View Tasks")
-    print("2. Add Task")
-    print("3. Mark Task as Completed")
-    print("4. Delete Task")
-    print("5. Save & Exit")
-
-#show_menu()
 
 # todo list as object on which to perform operations
 class TodoList():
@@ -31,12 +15,20 @@ class TodoList():
         """
         Initializes the TodoList with a given filepath.
         """
-        assert os.path.exists(filepath), f"File {filepath} does not exist."
+        # check if path exists
+        try:
+            assert os.path.exists(filepath), f"Dateipfad {filepath} konnte nicht gefunden werden."
+        except AssertionError as e:
+            print(e)
+            # if path is invalid return empty list
+            self.tasklist = []
+        else:
+            self.filepath = filepath
 
-        self.filepath = filepath
+            with open(filepath, 'r') as f:
+                self.tasklist = json.load(f)
 
-        with open(filepath, 'r') as f:
-            self.tasklist = json.load(f)
+        
 
         
     def view_tasks(self):
@@ -45,17 +37,17 @@ class TodoList():
         """
         # check for empty tasklist
         if not self.tasklist:
-            print("Currently no tasks.")
+            print("Aktuell keine Aufgaben.")
             return
         
-        print("Current Tasks:")
+        print("Aktuelle Aufgaben:")
         for t,task in enumerate(self.tasklist):
             status = 'Erledigt' if task['done'] else 'Offen'
             print(f'{t+1}. {task['name']}: {status}')
 
         return
     
-    
+
     def add_task(self, task_name):
         """
         Add a new task to an existing To-Do list
@@ -79,6 +71,7 @@ class TodoList():
                     'done' : False
                     }
         self.tasklist.append(new_task)
+        print(f'Aufgabe {task_name} erfolgreich hinzugefügt.')
         return 
     
     
@@ -108,6 +101,7 @@ class TodoList():
         
         completed_task['done'] = True
 
+        print(f'Aufgabe {task_name} als erledigt gesetzt.')
         return
     
 
@@ -117,18 +111,22 @@ class TodoList():
         """
 
         task_found = False
-        for t,task in enumerate(self.tasklist):
+        # iterate over copy of tasklist to avoid conflicts
+        for t, task in list(enumerate(self.tasklist)):
             if task['name'] == task_name:
                 del self.tasklist[t]
                 task_found = True
+                break  # Exit loop after deletion to avoid iteration issues
 
-            # make sure ids remain consistent
-            self.tasklist[t]['id'] = t+1
+        # Rebuild the tasklist with consistent IDs
+        for t, task in enumerate(self.tasklist):
+            task['id'] = t + 1
 
         if not task_found:
             print('Aufgabe nicht gefunden.')
             return
         
+        print(f'Aufgabe {task_name} erfolgreich gelöscht.')
         return self.tasklist
     
 
