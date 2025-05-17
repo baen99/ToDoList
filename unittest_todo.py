@@ -6,6 +6,7 @@ import unittest
 import json
 import os
 from backend_decoupled import TodoList
+from errors import *
 
 class TestTodoList(unittest.TestCase):
 
@@ -30,6 +31,13 @@ class TestTodoList(unittest.TestCase):
         self.assertEqual(self.testlist.tasklist[0]['id'], 1) # id should be 1
         self.assertEqual(self.testlist.tasklist[0]['name'], testname) # name should be Test
         self.assertFalse(self.testlist.tasklist[0]['done']) # task should not be done yet
+        
+        # now check if correct exception is thrown
+        with self.assertRaises(DuplicateTaskError) as context:
+            self.testlist.add_task(testname)
+        
+        self.assertEqual(context.exception.task_name, testname)
+        self.assertEqual(context.exception.error_message, f"Aufgabe {testname} bereits in To-Do Liste enthalten.")
 
 
     def test__task_position(self):
@@ -37,7 +45,14 @@ class TestTodoList(unittest.TestCase):
         self.testlist.add_task(testname)  
         idx = self.testlist._task_position(testname)
         #print(idx)
-        self.assertEqual(idx, 0)    
+        self.assertEqual(idx, 0)  
+
+
+    def test__task_exists(self):
+        testname = 'Test'
+        self.testlist.add_task(testname)   
+        self.assertTrue(self.testlist._task_exists(testname))
+        self.assertFalse(self.testlist._task_exists("Test2"))
 
 
     # TODO: test other functions of TodoList

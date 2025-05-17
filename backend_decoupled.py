@@ -6,9 +6,9 @@ Can be used for arbitrary frontend (CLI/GUI)
 import json
 import os
 import numpy as np
+from errors import *
 
 
-"""TODO: Implement Custom error classes"""
 
 # todo list as object on which to perform operations
 class TodoList():
@@ -22,7 +22,6 @@ class TodoList():
         # check if path exists
         if not os.path.exists(filepath):
             self.tasklist = []
-            self.filepath = ""
             raise FileNotFoundError(f"Dateipfad {filepath} konnte nicht gefunden werden. Leere Liste [] angelegt.")
         
         self.filepath = filepath
@@ -48,7 +47,8 @@ class TodoList():
 
         # assert new task doesn't already exist
         if self._task_exists(task_name):
-            raise ValueError(f"Aufgabe bereits in To-Do Liste enthalten.")
+            #raise ValueError(f"Aufgabe bereits in To-Do Liste enthalten.")
+            raise DuplicateTaskError(task_name)
 
         new_task = {'id' : len(self.tasklist)+1,
                     'name' : task_name,
@@ -84,14 +84,16 @@ class TodoList():
 
         # assert that completed task exists
         if not self._task_exists(task_name):
-            raise ValueError("Aufgabe nicht gefunden.")
+            #raise ValueError("Aufgabe nicht gefunden.")
+            raise TaskNotFoundError(task_name)
         
         task_idx = self._task_position(task_name)
         completed_task = self.tasklist[task_idx]
         
         # check if task already done
         if completed_task['done']:
-            raise ValueError("Aufgabe bereits erledigt.")
+            #raise ValueError("Aufgabe bereits erledigt.")
+            raise TaskAlreadyDoneError(task_name)
         
         completed_task['done'] = True
 
@@ -105,7 +107,9 @@ class TodoList():
 
          # assert that task exists
         if not self._task_exists(task_name):
-            raise ValueError("Aufgabe nicht gefunden.")       
+            #raise ValueError("Aufgabe nicht gefunden.")
+            raise TaskNotFoundError(task_name) 
+                  
         
         # build new list and leave out deleted task
         self.tasklist = [task for task in self.tasklist if task["name"] != task_name]

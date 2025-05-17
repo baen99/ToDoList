@@ -3,6 +3,7 @@ Runs todolist module in CLI interface
 """
 
 from backend_decoupled import TodoList
+from errors import *
 
 print("To-Do Liste")
 print("=======================")
@@ -60,24 +61,26 @@ while True:
             try:
                 todo.add_task(task_name)
                 print(f"Aufgabe {task_name} erfolgreich hinzugefügt.")
-            except ValueError as e:
-                print(e)
+            except DuplicateTaskError as e:
+                print("Fehler: " + e.error_message)
 
         case '3':
             task_name = input('Name der Aufgabe: ')
             try:
                 todo.complete_task(task_name)
                 print(f'Aufgabe {task_name} als erledigt gesetzt.')
-            except ValueError as e:
-                print(e)
+            # can catch both error types in complete_Task with one statement since both
+            # inherit from base class TodoError
+            except TodoError as e:
+                print("Fehler: " + e.error_message)
 
         case '4':
             task_name = input('Name der Aufgabe: ')
             try:
                 todo.delete_task(task_name)
                 print(f'Aufgabe {task_name} erfolgreich gelöscht.')
-            except ValueError as e:
-                print(e)
+            except TaskNotFoundError as e:
+                print("Fehler: " + e.error_message)
 
         case '5':
             save_path = input('Dateipfad der Liste (enter für default): ')
