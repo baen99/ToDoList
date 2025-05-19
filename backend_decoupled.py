@@ -100,6 +100,21 @@ class TodoList():
         return
     
 
+    def toggle_task(self, task_name):
+        """
+        Switch done status between True and False arbitrarily.
+        For GUI frontend only (therefore don't have to check for existence of task)
+        """
+        task_idx = self._task_position(task_name)
+        task = self.tasklist[task_idx]
+        current_status = task["done"]
+        
+        # invert current status
+        task['done'] = not current_status
+
+        return
+    
+
     def delete_task(self, task_name):
         """
         Delete a task from the To-Do list

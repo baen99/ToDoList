@@ -36,5 +36,5 @@ class TaskAlreadyDoneError(TodoError):
     """
     def __init__(self, task_name):
         self.task_name = task_name
-        self.error_message = f"Aufgabe {self.task_name} bereits."
+        self.error_message = f"Aufgabe {self.task_name} bereits erledigt."
         super().__init__(self.error_message)
