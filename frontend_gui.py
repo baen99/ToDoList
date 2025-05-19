@@ -3,11 +3,22 @@ GUI frontend for displaying To-Do list to user graphically using tkinter
 """
 
 import tkinter as tk
+import copy
 from backend_decoupled import TodoList
 from errors import *
 
 
+# ------ define some global hyperparameters --------
 filepath = "tasklist.json" # TODO: take user input
+
+main_button_width = 20
+main_font = ("TkDefaultFont",12)
+
+sub_button_width = 17
+sub_font = ("TkDefaultFont",11)
+
+# padding:....
+
 
 class TodoApp:
     """
@@ -15,6 +26,9 @@ class TodoApp:
     """
     def __init__(self, root):
         self.todo = TodoList(filepath) # a TodoList object is now coupled to the App page object
+        # make copy to compare altered list to when closing app
+        self.checkpoint = copy.deepcopy(self.todo.tasklist) # need deepcopy to also copy every single object (dict) inside list
+                                                            # instead of just shallow .copy() method
 
         self.root = root
         self.root.title("To-Do Liste")
@@ -24,18 +38,18 @@ class TodoApp:
         self.frame = tk.Frame(root)
         self.frame.pack(pady=15)
 
-        # TODO: button sollte nur einmal clickbar sein oder edit menu muss wieder verschwinden
-        self.edit_button = tk.Button(root, text="Liste bearbeiten", command=lambda: self.on_edit_task(), font=("TkDefaultFont",12))
+        self.edit_button = tk.Button(root, text="Liste bearbeiten", command=lambda: self.on_edit_task(), 
+                                     font=main_font, width=main_button_width
+                                     )
         self.edit_button.pack(pady=15)
+        self.edit_already_clicked = False # boolean value to track if edit menu is toggled or not
 
-        self.save_button = tk.Button(root, text="Speichern & Verlassen")#, command=self.on_save_tasks())
+        self.save_button = tk.Button(root, text="Liste speichern", command=lambda: self.on_save_tasks(), 
+                                     font=main_font, width=main_button_width
+                                     )
         self.save_button.pack(pady=20)
 
-        # TODO: label to display messages to user?
         # TODO: have tasks as interactive labels (stichwort .bind())?
-
-
-
         
 
         self.on_view_tasks()
@@ -49,7 +63,6 @@ class TodoApp:
             cell.destroy()
 
         tasklist = self.todo.view_tasks() # for consistency call view_tasks method, could also simply access tasklist attribute
-        print(tasklist)
         n_tasks = len(tasklist)
 
         # row 0 with headings
@@ -101,12 +114,31 @@ class TodoApp:
 
 
     def on_edit_task(self):
-        self.entry = tk.Entry(self.root)
-        self.entry.pack(after=self.edit_button)
-        self.add_button = tk.Button(self.root, text="Aufgabe hinzufügen", command=lambda: self.on_add_task())
-        self.add_button.pack(after=self.entry)
-        self.delete_button = tk.Button(self.root, text="Aufgabe löschen", command=lambda: self.on_delete_task())
-        self.delete_button.pack(after=self.add_button)
+        """
+        edit frame is either created or destroyed if already existing such that there are no multiple edit frames
+        """
+        if self.edit_already_clicked:
+            # already clicked can only be true if edit_frame was created, therefore it exists and can be destroyed
+            self.edit_frame.destroy()
+            self.edit_already_clicked = False
+        else:
+            self.edit_frame = tk.Frame(self.root)
+            self.edit_frame.pack(after=self.edit_button)
+
+            self.entry = tk.Entry(self.edit_frame, width=sub_button_width, font=sub_font)
+            self.entry.pack()
+
+            self.add_button = tk.Button(self.edit_frame, text="Aufgabe hinzufügen", command=lambda: self.on_add_task(),
+                                        width=sub_button_width, font=sub_font
+                                        )
+            self.add_button.pack(after=self.entry)
+
+            self.delete_button = tk.Button(self.edit_frame, text="Aufgabe löschen", command=lambda: self.on_delete_task(),
+                                           width=sub_button_width, font=sub_font
+                                           )
+            self.delete_button.pack(after=self.add_button)
+
+            self.edit_already_clicked = True
 
 
     def on_add_task(self):
@@ -115,8 +147,7 @@ class TodoApp:
             self.todo.add_task(user_input)
             self.on_view_tasks()
         except DuplicateTaskError as e:
-            pass
-            # TODO: open new window displaying error message to user
+            self.error_window(e)
 
 
     def on_delete_task(self):
@@ -125,20 +156,73 @@ class TodoApp:
             self.todo.delete_task(user_input)
             self.on_view_tasks()
         except TaskNotFoundError as e:
+            self.error_window(e)
+
+
+    def error_window(self, error):
+        """
+        New window pops up displaying an error message to the user
+        """
+        window = tk.Toplevel()
+        window.title("Fehlermeldung")
+        window.geometry("500x150+400+200")
+
+        error_label = tk.Label(window, text=f"Fehler: " + error.error_message, font=("TkDefaultFont",12), pady=20)
+        error_label.pack()
+
+        dismiss_button = tk.Button(window, text="Schließen", command=lambda: window.destroy(), font=("TkDefaultFont",12))
+        dismiss_button.pack()
+
+        # freeze root in the background until user dismisses error window
+        window.transient() # keep on top of root (transient with None)
+        window.grab_set() # direct all input and events in application to this window
+        window.wait_window() # pause code execution until winodw is destroyed
+        #window.mainloop() dont have to call a window's mainloop inside another window's mainloop
+
+
+    def on_save_tasks(self):
+        self.todo.save_tasks(filepath=filepath)
+        self.checkpoint = copy.deepcopy(self.todo.tasklist) # update checkpoint
+        # only display new confirmation label if not already existing
+        if hasattr(self, "confirm_label"):
             pass
-            # TODO: open new window displaying error message to user
+        else:
+            self.confirm_label = tk.Label(self.root, text=f"Liste gespeichert unter {filepath}")
+            self.confirm_label.pack(after=self.save_button)
 
 
+    def handle_close(self):
+        """
+        Custom handling of window closing event triggered by 
+        user clicking close button 'x' in top right corner of window.
+        Check if there have been changes made to the initial todo list
+        and prompt user to save it.
+        """
+        if self.todo.tasklist != self.checkpoint:
+            window = tk.Toplevel()
+            window.title("Warnung")
+            window.geometry("500x150+400+200")
 
+            warn_label = tk.Label(window, text="Achtung: Es gibt ungespeicherte Änderungen. Trotzdem schließen?",
+                                   font=("TkDefaultFont",12), pady=20
+                                   )
+            warn_label.pack()
 
+            dialogue_frame = tk.Frame(window)
+            dialogue_frame.pack()
+            
+            close_button = tk.Button(dialogue_frame, text="Ja", command=lambda: self.root.destroy(), font=("TkDefaultFont",12))
+            close_button.grid(row=0, column=0)
 
+            dont_close_button = tk.Button(dialogue_frame, text="Nein", command=lambda: window.destroy(), font=("TkDefaultFont",12))
+            dont_close_button.grid(row=0, column=1)
 
+            window.transient() 
+            window.grab_set()
+            window.wait_window() 
+        else:
+            self.root.destroy()
 
-
-
-
-
-        
 
 
 
@@ -150,4 +234,6 @@ if __name__ == "__main__":
     app = TodoApp(root)
     root.state("zoomed") # start maximized
     root.resizable(True, True) # allow resizing
+    root.protocol("WM_DELETE_WINDOW", lambda: app.handle_close()) # redirect window closing event to custom handler
     root.mainloop()
+    #print("Stopped")

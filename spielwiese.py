@@ -10,6 +10,7 @@ class MyApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Minimal GUI")
+        self.root.geometry("500x300+400+200")
 
         self.label = tk.Label(root, text="Enter something:")
         self.label.pack()
@@ -23,8 +24,6 @@ class MyApp:
         self.output_label = tk.Label(root, text="")
         self.output_label.pack()
 
-        self.task_listbox = tk.Listbox(root, width=50)
-        self.task_listbox.pack(pady=10)
 
     def on_submit(self):
         user_input = self.entry.get()
