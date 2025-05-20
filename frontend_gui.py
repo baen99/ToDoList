@@ -32,6 +32,9 @@ class TodoApp:
 
         self.root = root
         self.root.title("To-Do Liste")
+        self.root.state("zoomed") # start maximized
+        self.root.resizable(True, True) # allow resizing
+        self.root.protocol("WM_DELETE_WINDOW", lambda: app.handle_close()) # redirect window closing event to custom handler
 
         # -------- UI Components -----------
         # TODO: embed frame inside a canvas for scrollability with arbitrarily long lists
@@ -232,8 +235,5 @@ class TodoApp:
 if __name__ == "__main__":
     root = tk.Tk()
     app = TodoApp(root)
-    root.state("zoomed") # start maximized
-    root.resizable(True, True) # allow resizing
-    root.protocol("WM_DELETE_WINDOW", lambda: app.handle_close()) # redirect window closing event to custom handler
     root.mainloop()
     #print("Stopped")

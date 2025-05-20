@@ -5,7 +5,7 @@
 
 import tkinter as tk
 
-#
+"""
 class MyApp:
     def __init__(self, root):
         self.root = root
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = MyApp(root)
     root.mainloop()
-#"""
+"""
 """
 root = tk.Tk()
 
@@ -110,4 +110,58 @@ checkbutton_1.grid()
 
 # Start the Tkinter event loop
 window.mainloop()
+"""
+
+#"""
+import sqlite3
+
+DB_NAME = "test.db"
+# sqlite3.connect() implicitly creates database if it does not exist
+con = sqlite3.connect(DB_NAME)
+cursor = con.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS tasks (" \
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," \
+                    "name TEXT NOT NULL UNIQUE," \
+                    "done BOOLEAN NOT NULL CHECK (done IN (0,1))" \
+                                                ")"
+                )
+#cursor.execute("DROP TABLE tasks")
+con.commit()
+
+test_input = [("Gym",1), ("Einkauf",0)]
+#cursor.executemany("INSERT INTO tasks (name, done) VALUES (?,?)", test_input)
+try:
+    cursor.execute("INSERT INTO tasks (name,done) VALUES (?,?)", (None,2))
+except sqlite3.Error as e:
+    print(e.__class__.__name__)
+#con.commit()
+
+#uery = cursor.execute("DELETE FROM tasks WHERE name = 'Gym'")
+#rint(query.fetchall())
+#con.commit()
+
+#cursor.execute("INSERT INTO tasks (name,done) VALUES (?,?)", ("Gym", False))
+#con.commit()
+
+#cursor.execute("UPDATE tasks SET done = ? WHERE name = ?", (False, "Einkauf"))
+#con.commit()
+
+#res = cursor.execute("SELECT name FROM sqlite_master")
+res = cursor.execute("SELECT * FROM tasks")
+#res = cursor.execute("SELECT done FROM tasks WHERE name = ?", ("Putzen",))
+res_list = res.fetchall()
+print(res_list)
+#print(res_list[0][1])
+if not res_list:
+    print("Empty!")
+
+
+con.close()
+con.close()
+#"""
+
+"""
+from database import DataBase
+db = DataBase()
+print(db.name)
 """
