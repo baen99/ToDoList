@@ -4,7 +4,7 @@ Basically just passes the function calls from the GUI frontend
 to the corresponding queries in the database layer 
 with some validation logic of user input and appropriate exception handling.
 Most of the previously needed logic when performing operatoins on the tasklist 
-(like appending, indexing, check for duplicates etc...) is now formulated in thge queries and handled by SQLite.
+(like appending, indexing, check for duplicates etc...) is now formulated in the queries and handled by SQL.
 """
 
 import sqlite3
@@ -24,11 +24,11 @@ class TaskManager:
         """
         error can occur if task already exists or empty taskname
         """
-        assert taskname is not None, "Aufgabenname darf nicht leer sein."
+        assert taskname, "Aufgabenname darf nicht leer sein."
         try:
             self.db.add_task(taskname)
-        except sqlite3.IntegrityError as e:
-            raise DuplicateTaskError(taskname) # convert builtin error to custom one
+        except sqlite3.IntegrityError:
+            raise DuplicateTaskError(taskname) # convert built-in error to custom one
         
 
     def toggle_task(self, taskname):

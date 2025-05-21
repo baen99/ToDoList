@@ -5,8 +5,8 @@ Read from and write into SQLite database storing the tasks instead of simple .js
 import sqlite3
 
 
-#DB_NAME = "todo.db"
-DB_NAME = "test.db"
+DB_NAME = "todo.db"
+#DB_NAME = "test.db"
 
 class DataBase:
     """
@@ -62,6 +62,7 @@ class DataBase:
         Destructor to close connection when there are no more references to the DataBase object.
         Obsolete when using DataBase as context manager.
         """
+        #print("Destructor called")
         self.con.close()
 
 
@@ -71,13 +72,16 @@ class DataBase:
         Run when entering context manager with block.
         Return value is assigned to the variable after the as statement
         """
+        #print("__enter__ called")
         return self
     
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
         """
         Run when exiting context manager with block.
         Run in any case, even when exceptions occur within the with block.
+        Additional arguments describe an exception if occurring inside the with block (gets handled by backend logic).
         """
+        #print("__exit__ called")
         self.con.close()
 

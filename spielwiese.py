@@ -128,13 +128,17 @@ cursor.execute("CREATE TABLE IF NOT EXISTS tasks (" \
 #cursor.execute("DROP TABLE tasks")
 con.commit()
 
-test_input = [("Gym",1), ("Einkauf",0)]
+test_input = [("Gym",1), ("Einkauf",0), ("Joggen",1), ("Putzen",1),
+              ("Arbeit",0), ("Entwickeln",0), ("Bewerbung",1),
+              ("Fahrrad",1), ("Shake",1), ("Spazieren",0), ("Smoothie",0)
+              ]
+test_input2 = [(f"Task {i}",0) for i in range(30)]
 #cursor.executemany("INSERT INTO tasks (name, done) VALUES (?,?)", test_input)
 try:
     cursor.execute("INSERT INTO tasks (name,done) VALUES (?,?)", (None,2))
 except sqlite3.Error as e:
     print(e.__class__.__name__)
-#con.commit()
+con.commit()
 
 #uery = cursor.execute("DELETE FROM tasks WHERE name = 'Gym'")
 #rint(query.fetchall())
@@ -164,4 +168,42 @@ con.close()
 from database import DataBase
 db = DataBase()
 print(db.name)
+"""
+
+"""
+from errors import *
+e = DuplicateTaskError("Einkauf")
+print(e.args)
+"""
+
+
+"""
+import tkinter as tk
+from tkinter import ttk
+
+root = tk.Tk()
+container = ttk.Frame(root)
+canvas = tk.Canvas(container)
+scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
+scrollable_frame = ttk.Frame(canvas)
+
+scrollable_frame.bind(
+    "<Configure>",
+    lambda e: canvas.configure(
+        scrollregion=canvas.bbox("all")
+    )
+)
+
+canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+canvas.configure(yscrollcommand=scrollbar.set)
+
+for i in range(50):
+    ttk.Label(scrollable_frame, text="Sample scrolling label").pack()
+
+container.pack()
+canvas.pack(side="left", fill="both", expand=True)
+scrollbar.pack(side="right", fill="y")
+
+root.mainloop()
 """
