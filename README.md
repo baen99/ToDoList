@@ -1,1 +1,3 @@
-TODO: package into .exe ?
+To-Do List Project
+
+This repo contains a basic architecture for a To-Do list app. It consists of a modular backend that can be accessed either by a CLI- or GUI-frontend. Currently implementing a database layer...
