@@ -5,7 +5,7 @@
 
 import tkinter as tk
 
-#
+"""
 class MyApp:
     def __init__(self, root):
         self.root = root
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = MyApp(root)
     root.mainloop()
-#"""
+"""
 """
 root = tk.Tk()
 
@@ -110,4 +110,100 @@ checkbutton_1.grid()
 
 # Start the Tkinter event loop
 window.mainloop()
+"""
+
+#"""
+import sqlite3
+
+DB_NAME = "test.db"
+# sqlite3.connect() implicitly creates database if it does not exist
+con = sqlite3.connect(DB_NAME)
+cursor = con.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS tasks (" \
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," \
+                    "name TEXT NOT NULL UNIQUE," \
+                    "done BOOLEAN NOT NULL CHECK (done IN (0,1))" \
+                                                ")"
+                )
+#cursor.execute("DROP TABLE tasks")
+con.commit()
+
+test_input = [("Gym",1), ("Einkauf",0), ("Joggen",1), ("Putzen",1),
+              ("Arbeit",0), ("Entwickeln",0), ("Bewerbung",1),
+              ("Fahrrad",1), ("Shake",1), ("Spazieren",0), ("Smoothie",0)
+              ]
+test_input2 = [(f"Task {i}",0) for i in range(30)]
+#cursor.executemany("INSERT INTO tasks (name, done) VALUES (?,?)", test_input)
+try:
+    cursor.execute("INSERT INTO tasks (name,done) VALUES (?,?)", (None,2))
+except sqlite3.Error as e:
+    print(e.__class__.__name__)
+con.commit()
+
+#uery = cursor.execute("DELETE FROM tasks WHERE name = 'Gym'")
+#rint(query.fetchall())
+#con.commit()
+
+#cursor.execute("INSERT INTO tasks (name,done) VALUES (?,?)", ("Gym", False))
+#con.commit()
+
+#cursor.execute("UPDATE tasks SET done = ? WHERE name = ?", (False, "Einkauf"))
+#con.commit()
+
+#res = cursor.execute("SELECT name FROM sqlite_master")
+res = cursor.execute("SELECT * FROM tasks")
+#res = cursor.execute("SELECT done FROM tasks WHERE name = ?", ("Putzen",))
+res_list = res.fetchall()
+print(res_list)
+#print(res_list[0][1])
+if not res_list:
+    print("Empty!")
+
+
+con.close()
+con.close()
+#"""
+
+"""
+from database import DataBase
+db = DataBase()
+print(db.name)
+"""
+
+"""
+from errors import *
+e = DuplicateTaskError("Einkauf")
+print(e.args)
+"""
+
+
+"""
+import tkinter as tk
+from tkinter import ttk
+
+root = tk.Tk()
+container = ttk.Frame(root)
+canvas = tk.Canvas(container)
+scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
+scrollable_frame = ttk.Frame(canvas)
+
+scrollable_frame.bind(
+    "<Configure>",
+    lambda e: canvas.configure(
+        scrollregion=canvas.bbox("all")
+    )
+)
+
+canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+canvas.configure(yscrollcommand=scrollbar.set)
+
+for i in range(50):
+    ttk.Label(scrollable_frame, text="Sample scrolling label").pack()
+
+container.pack()
+canvas.pack(side="left", fill="both", expand=True)
+scrollbar.pack(side="right", fill="y")
+
+root.mainloop()
 """
